@@ -4,26 +4,10 @@
 1. [vercel.com](https://vercel.com) par jaao
 2. GitHub account se sign up karo
 
-## Step 2: Code Upload Karo
-Sirf `vercel-deploy` folder ka content deploy karna hai.
-
-### Option A: GitHub se (Recommended)
-1. Sirf `vercel-deploy` folder ka content ek naye GitHub repo mein daalo
-2. Vercel dashboard mein "New Project" click karo
-3. Apna GitHub repo select karo
-4. Deploy click karo
-
-### Option B: Vercel CLI se
-```bash
-# vercel-deploy folder mein jaao
-cd vercel-deploy
-
-# Vercel CLI install karo
-npm i -g vercel
-
-# Deploy karo
-vercel
-```
+## Step 2: GitHub Repo Import Karo
+1. Vercel dashboard mein "Add New Project" click karo
+2. `telegram-url-monitor-vercel` repo select karo
+3. **Deploy** click karo
 
 ## Step 3: Environment Variables Set Karo
 Vercel Dashboard → Your Project → Settings → Environment Variables
@@ -34,17 +18,26 @@ Vercel Dashboard → Your Project → Settings → Environment Variables
 | `ADMIN_CHAT_ID` | `1691680798` | Aapka Telegram Chat ID |
 
 ## Step 4: Webhook Register Karo (ZAROORI)
-Deploy hone ke baad, apna bot ka webhook register karna padega:
+Deploy hone ke baad browser mein kholo:
+`https://your-app.vercel.app/api/setup`
+- Apna Vercel domain enter karo (example: `my-bot.vercel.app`)
+- "Register Webhook" click karo
+- "success" aaye toh webhook register ho gaya!
 
-1. Browser mein kholo: `https://your-app.vercel.app/api/setup`
-2. Apna Vercel domain enter karo (example: `my-bot.vercel.app`)
-3. "Register Webhook" click karo
-4. "success" message aaye toh kaam ho gaya!
+## Step 5: Free URL Monitoring Setup (cron-job.org)
 
-## Step 5: Test Karo
-1. Telegram mein apne bot par jaao
-2. `/start` command bhejo
-3. Bot reply kare toh sab theek hai!
+Vercel ka built-in cron free nahi hai, isliye **cron-job.org** use karo — bilkul FREE hai!
+
+### Setup karne ka tarika:
+1. [cron-job.org](https://cron-job.org) par free account banao
+2. Login karo → "CREATE CRONJOB" click karo
+3. Yeh settings karo:
+   - **Title:** `Telegram Bot Monitor`
+   - **URL:** `https://your-app.vercel.app/api/monitor`
+   - **Schedule:** `Every 1 minute`
+4. Save karo — bas ho gaya!
+
+Ab har minute automatically saari URLs ping hongi aur agar koi URL down ho toh Telegram par alert aayega.
 
 ---
 
@@ -63,23 +56,18 @@ Deploy hone ke baad, apna bot ka webhook register karna padega:
 
 ---
 
-## Important Notes
+## Useful Links
+- **Home Page:** `https://your-app.vercel.app/`
+- **Webhook Setup:** `https://your-app.vercel.app/api/setup`
+- **Manual Monitor Trigger:** `https://your-app.vercel.app/api/monitor`
+- **Health Check:** `https://your-app.vercel.app/health`
 
-### Data Persistence
-- Vercel ke `/tmp` folder mein data store hota hai
-- **Data deployments ke beech delete ho sakta hai** (Vercel serverless limitation)
-- Permanent data ke liye Vercel KV ya koi external database use karo
+---
 
-### URL Monitoring
-- Monitoring Vercel Cron Job ke through har minute hoti hai
-- Vercel Free Plan mein 2 cron jobs allowed hain
-- Agar cron kaam na kare, manually `/api/monitor` URL call kar sakte ho
-
-### Web Page
-- `https://your-app.vercel.app/` - Bot ka welcome page
-- `https://your-app.vercel.app/api/status` - Status check
-- `https://your-app.vercel.app/api/monitor` - Manual monitoring trigger
-- `https://your-app.vercel.app/api/setup` - Webhook setup
+## Important Note: Data Persistence
+Vercel serverless mein data `/tmp` folder mein store hota hai.
+Restarts pe data reset ho sakta hai — agar permanent storage chahiye toh
+Vercel KV ya koi external database (MongoDB Atlas free tier) use karo.
 
 ---
 
@@ -87,9 +75,9 @@ Deploy hone ke baad, apna bot ka webhook register karna padega:
 ```
 vercel-deploy/
 ├── api/
-│   ├── webhook.py      ← Telegram se updates receive karta hai
-│   ├── monitor.py      ← Cron job se URLs ping karta hai
-│   ├── index.py        ← Web page serve karta hai
+│   ├── webhook.py       ← Telegram se updates receive karta hai
+│   ├── monitor.py       ← URLs ping karta hai (cron-job.org se trigger)
+│   ├── index.py         ← Web page serve karta hai
 │   └── setup_webhook.py ← Webhook register karne ka tool
 ├── config.py
 ├── bot_handlers.py
@@ -98,7 +86,7 @@ vercel-deploy/
 ├── utils.py
 ├── advanced_ui.py
 ├── future_features.py
-├── vercel.json         ← Vercel configuration
-├── requirements.txt    ← Python packages
-└── DEPLOYMENT.md       ← Yahi file
+├── vercel.json          ← Vercel configuration (no paid cron)
+├── requirements.txt
+└── DEPLOYMENT.md        ← Yahi file
 ```
